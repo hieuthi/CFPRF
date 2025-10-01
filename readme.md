@@ -1,3 +1,18 @@
+# Modified
+This is a modified version of CFPRF models for my own experiments. You can check the paper [Robust Localization of Partially Fake Speech: Metrics and Out-of-Domain Evaluation](https://arxiv.org/abs/2507.03468)
+
+We found that simply follows the training instructions does not produce the model (reCFPRF) with the same results on in-domain evaluation set (different GPU can be the reason)
+```
+ python train_stage1.py --dn PS --v1 0.25 --v2 0.1  --num_epoch 18 --save
+```
+Some people suggested to run the training as follow may get better results on in-domain data (PartialSpoof)
+```
+ python train_stage1.py --dn PS --v1 0.45 --v2 0.1  --num_epoch 18 --save
+```
+However we also found out that our model had better results on out-of-domain evaluation sets (LlamaPartialSpoof and HAD) which renders the optimization on in-domain evaluation unneccesary
+You can download [the reCFPRF from hugging face](https://huggingface.co/hieuthi/CFPRF-ckpts/blob/main/reCFPRF.tgz)
+
+
 # Coarse-to-Fine Proposal Refinement Framework for Audio Temporal Forgery Detection and Localization
 
 **Authors**: [Junyan Wu](https://www.researchgate.net/profile/Wu-Junyan-5/research), [Wei Lu (Corresponding author)](https://cse.sysu.edu.cn/content/2461), [Xiangyang Luo](https://ieeexplore.ieee.org/author/37399489600), [Rui Yang](https://orcid.org/0009-0008-7446-7216), [Qian Wang](https://orcid.org/0000-0002-8967-8525), [Xiaochun Cao](https://scst.sysu.edu.cn/members/caoxiaochun.htm).
