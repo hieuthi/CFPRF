@@ -1,4 +1,5 @@
 from typing import Optional
+import argparse
 import torch
 import torch.nn.functional as F
 import torch.nn.init as torch_init
@@ -60,7 +61,9 @@ class ASRModel(nn.Module):
     def __init__(self):
         super(ASRModel, self).__init__()
         cp_path = os.path.join('./pretrain_models/xlsr2_300m.pt') 
-        model, cfg, task = fairseq.checkpoint_utils.load_model_ensemble_and_task([cp_path])
+        task_arg = argparse.Namespace(task='audio_pretraining')
+        task = fairseq.tasks.setup_task(task_arg)
+        model, cfg, task = fairseq.checkpoint_utils.load_model_ensemble_and_task([cp_path], task=task)
         self.model = model[0]
 
     def forward(self, x):

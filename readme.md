@@ -1,5 +1,10 @@
 # Modified
-This is a modified version of CFPRF models for my own experiments. You can check the paper [Robust Localization of Partially Fake Speech: Metrics and Out-of-Domain Evaluation](https://arxiv.org/abs/2507.03468)
+
+This is a modified version of CFPRF codebase. It added convenient scripts for out-of-domain evaluation without introduced any new module to the base model. For more information, you can check the paper [Robust Localization of Partially Fake Speech: Metrics and Out-of-Domain Evaluation](https://arxiv.org/abs/2507.03468).
+
+Feel free to add an issue in the repository if you have any question.
+
+## Reproduce CFPRF
 
 We found that simply follows the training instructions does not produce the model (reCFPRF) with the same results on in-domain evaluation set (different GPU can be the reason)
 ```
@@ -9,8 +14,48 @@ Some people suggested to run the training as follow may get better results on in
 ```
  python train_stage1.py --dn PS --v1 0.45 --v2 0.1  --num_epoch 18 --save
 ```
-However we also found out that our model had better results on out-of-domain evaluation sets (LlamaPartialSpoof and HAD) which renders the optimization on in-domain evaluation unneccesary
-You can download [the reCFPRF from hugging face](https://huggingface.co/hieuthi/CFPRF-ckpts/blob/main/reCFPRF.tgz)
+
+However our model had better results on out-of-domain evaluation sets (LlamaPartialSpoof and HAD) which renders the optimization on in-domain evaluation unneccesary. You can download [the reCFPRF from hugging face](https://huggingface.co/hieuthi/CFPRF-ckpts/blob/main/reCFPRF.tgz)
+
+## Out-of-domain evaluation
+The main contribution of this codebase is the evaluation scripts which follow my [MultiResoModel-Simple Setup](https://github.com/hieuthi/MultiResoModel-Simple). I only interested in the FDN and not the PRN module.
+- For PartialSpoof, you can run evaluation as follows
+```
+./download_ps.sh
+./inference.sh checkpoints/1FDN_PS.pth PartialSpoof/wav/eval results/CFPRF_ps
+./evaluate.sh results/CFPRF_ps/unit0.02.score PartialSpoof/label_PartialSpoof_eval.txt results/CFPRF_ps/
+```
+- For LlamaPartialSpoof
+```
+./download_lps.sh
+./inference.sh checkpoints/1FDN_PS.pth LlamaPartialSpoof/R01TTS.0.a results/CFPRF_lps
+./evaluate.sh results/CFPRF_lps/unit0.02.score LlamaPartialSpoof/label_R01TTS.0.a.txt results/CFPRF_lps/
+```
+- For Half-truth
+```
+./download_had.sh
+./inference.sh checkpoints/1FDN_PS.pth HAD/wav/test results/CFPRF_had
+./evaluate.sh results/CFPRF_had/unit0.02.score HAD/label_HAD_test.txt results/CFPRF_had/
+```
+Similar for reCFPRF
+
+
+## Results
+Due the the slight different on the way long utterances were handled, below results are slightly different from the paper Robust Localization of Partially Fake Speech
+
+- Utterance-based (Upscaled from 20ms scores) Equal Error Rate (EER)
+
+|   Model | ps-eval | LlamaPartialSpoof |
+|---------|--------:|------------------:|
+|   CFPRF |   1.68% |            31.62% |
+| reCFPRF |   1.60% |            25.11% |
+
+- 20-ms frame-based EER
+
+|   Model | ps-eval | LlamaPartialSpoof | Half-truth Test |
+|---------|---------|------------------:|----------------:|
+|   CFPRF |   7.61% |           43.22%  |          27.60% |
+| reCFPRF |   9.84% |           41.67%  |          14.86% | 
 
 
 # Coarse-to-Fine Proposal Refinement Framework for Audio Temporal Forgery Detection and Localization
